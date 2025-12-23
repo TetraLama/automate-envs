@@ -1,0 +1,16 @@
+---
+- name: Create local bin directory
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.local/bin"
+    state: directory
+    mode: '0755'
+
+- name: Install UV (Python Tool)
+  ansible.builtin.shell:
+    cmd: "curl -LsSf {{ uv_installer_url }} | sh"
+    creates: "{{ ansible_user_dir }}/.cargo/bin/uv"
+
+- name: Install NVM
+  ansible.builtin.shell:
+    cmd: "curl -o- {{ nvm_installer_url }} | bash"
+    creates: "{{ ansible_user_dir }}/.nvm/nvm.sh"

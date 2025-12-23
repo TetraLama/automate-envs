@@ -1,0 +1,4 @@
+# roles/k8s_worker_join/defaults/main.yml
+---
+k8s_token_ttl: "24h"
+k8s_network_interface: "{{ ansible_default_ipv4.interface }}"

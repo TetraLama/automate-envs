@@ -1,0 +1,10 @@
+---
+- name: "Gather facts from control plane"
+  hosts: controlplane
+  gather_facts: true
+
+- name: "Deploy Worker"
+  hosts: worker
+  gather_facts: true
+  roles:
+    - k8s-worker

@@ -1,0 +1,7 @@
+---
+- name: "Deploy Kubernetes Cluster"
+  hosts: all
+  roles:
+    - common
+    - containerd
+    - kubernetes

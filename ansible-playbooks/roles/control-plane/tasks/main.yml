@@ -1,0 +1,64 @@
+---
+- name: Check if Kubernetes is already initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: k8s_initialized
+
+- name: Initialize Control Plane
+  ansible.builtin.command: kubeadm init --pod-network-cidr={{ pod_network_cidr }}
+  become: true
+  when: not k8s_initialized.stat.exists
+
+- name: Create .kube directory for deploy user
+  ansible.builtin.file:
+    path: "{{ ansible_facts['user_dir'] }}/.kube"
+    state: directory
+    mode: '0755'
+  become: false
+
+- name: Copy kubeconfig to deploy user
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_facts['user_dir'] }}/.kube/config"
+    remote_src: true
+    owner: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
+    mode: '0600'
+  become: true
+
+- name: Install Tigera Calico operator
+  ansible.builtin.command:
+    cmd: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/tigera-operator.yaml
+  environment:
+    KUBECONFIG: "{{ ansible_facts['user_dir'] }}/.kube/config"
+  register: calico_operator_result
+  changed_when: "'created' in calico_operator_result.stdout"
+  failed_when: "calico_operator_result.rc != 0 and 'AlreadyExists' not in calico_operator_result.stderr"
+
+- name: Create Calico custom resources with pod CIDR
+  ansible.builtin.shell: |
+    kubectl create -f - <<EOF
+    apiVersion: operator.tigera.io/v1
+    kind: Installation
+    metadata:
+      name: default
+    spec:
+      calicoNetwork:
+        ipPools:
+        - blockSize: 26
+          cidr: {{ pod_network_cidr }}
+          encapsulation: VXLANCrossSubnet
+          natOutgoing: Enabled
+          nodeSelector: all()
+    ---
+    apiVersion: operator.tigera.io/v1
+    kind: APIServer
+    metadata:
+      name: default
+    spec: {}
+    EOF
+  environment:
+    KUBECONFIG: "{{ ansible_facts['user_dir'] }}/.kube/config"
+  register: calico_resources_result
+  changed_when: "'created' in calico_resources_result.stdout"
+  failed_when: "calico_resources_result.rc != 0 and 'AlreadyExists' not in calico_resources_result.stderr"

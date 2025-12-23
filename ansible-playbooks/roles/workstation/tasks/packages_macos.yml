@@ -1,0 +1,13 @@
+---
+- name: Install Homebrew Packages
+  community.general.homebrew:
+    name: "{{ packages_common + ['opentofu', 'kubernetes-cli', 'podman', 'sops'] }}"
+    state: present
+
+- name: Install Homebrew Casks
+  community.general.homebrew_cask:
+    name:
+      - podman-desktop
+      - font-hack-nerd-font
+      - visual-studio-code
+    state: present

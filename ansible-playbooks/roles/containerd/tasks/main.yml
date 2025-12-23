@@ -1,0 +1,43 @@
+---
+- name: Ensure containerd dependencies are installed
+  ansible.builtin.dnf:
+    name: containerd
+    state: present
+  become: true
+  when: ansible_facts['distribution'] == "Fedora"
+
+- name: Configure containerd service
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  become: true
+
+- name: Generate default containerd configuration
+  ansible.builtin.command: containerd config default | sudo tee /etc/containerd/config.toml
+  become: true
+
+- name: Modify containerd configuration for systemd cgroup driver
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: 'SystemdCgroup = false'
+    replace: 'SystemdCgroup = true'
+  become: true
+
+# - name: Configure CNI bin directory for Calico compatibility
+#   ansible.builtin.lineinfile:
+#     path: /etc/containerd/config.toml
+#     regexp: '^\s*bin_dir\s*='
+#     line: '      bin_dir = "/opt/cni/bin"'
+#     insertafter: '^\[plugins\."io\.containerd\.grpc\.v1\.cri"\.cni\]'
+#   become: true
+#   notify: restart containerd
+
+- name: Ensure containerd service is enabled and started
+  ansible.builtin.systemd:
+    name: containerd
+    enabled: true
+    state: started
+  become: true

@@ -1,0 +1,29 @@
+---
+- name: Load OS-specific variables
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - main.yml
+      paths:
+        - vars
+
+- name: Install Packages (Fedora)
+  ansible.builtin.include_tasks: packages_dnf.yml
+  when: ansible_distribution == "Fedora"
+  tags: ["system"]
+
+- name: Install Packages (MacOS)
+  ansible.builtin.include_tasks: packages_macos.yml
+  when: ansible_os_family == "Darwin"
+  tags: ["system", "user"]
+
+- name: Setup Development Tools (UV, NVM, Aliases)
+  ansible.builtin.include_tasks: tools.yml
+  tags: ["user"]
+
+- name: Link Dotfiles
+  ansible.builtin.include_tasks: dotfiles.yml
+  tags: ["user"]

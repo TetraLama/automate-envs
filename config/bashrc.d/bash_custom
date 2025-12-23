@@ -1,0 +1,7 @@
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH:"
+fi
+PATH="$HOME/.opencode/bin:$PATH"
+export PATH
+
+eval "$(zoxide init bash)"

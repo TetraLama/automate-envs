@@ -1,0 +1,8 @@
+Host c1
+    HostName cluster-1.prairie.ovh
+
+Host c2
+    HostName cluster-2.prairie.ovh
+
+Host c3
+    HostName cluster-3.prairie.ovh

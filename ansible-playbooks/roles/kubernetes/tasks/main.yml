@@ -1,0 +1,18 @@
+---
+- name: Install Kubernetes packages
+  ansible.builtin.dnf:
+    name:
+      - kubernetes{{ kubernetes_major_version | default('') }}
+      - kubernetes{{ kubernetes_major_version | default('') }}-kubeadm
+      - kubernetes{{ kubernetes_major_version | default('') }}-client
+    state: present
+    update_cache: true
+  become: true
+  when: ansible_facts['distribution'] == 'Fedora'
+
+- name: Enable kubelet service
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
+    state: started
+  become: true

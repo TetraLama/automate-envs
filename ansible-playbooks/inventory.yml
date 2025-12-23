@@ -1,0 +1,25 @@
+all:
+  vars:
+    kubernetes_version: "1.31"
+    pod_network_cidr: "10.244.0.0/16"
+  children:
+    controlplane:
+    worker:
+
+workstations:
+  hosts:
+    localhost:
+      ansible_connection: local
+
+controlplane:
+  hosts:
+    c1:
+
+worker:
+  vars:
+    node-role.kubernetes.io/worker: "worker"
+    workload-type: "compute"
+    zone: "a"
+  hosts:
+    c2:
+    c3:

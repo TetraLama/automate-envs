@@ -1,0 +1,8 @@
+---
+- name: "Deploy Kubernetes Cluster"
+  import_playbook: deploy-kubernetes.yml
+
+- name: "Deploy Control Plane"
+  hosts: controlplane
+  roles:
+    - control-plane

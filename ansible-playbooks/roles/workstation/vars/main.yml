@@ -1,0 +1,24 @@
+---
+packages_common:
+  - git
+  - curl
+  - unzip
+  - ripgrep
+  - fd-find
+  - neovim
+  - fish
+  - nushell
+  - zsh
+  - fzf
+  - bat
+  - jq
+  - podman
+  - podman-compose
+
+packages_fedora:
+  - dnf-plugins-core
+  - util-linux-user # for chsh
+
+# URLs for binary tools
+uv_installer_url: "https://astral.sh/uv/install.sh"
+nvm_installer_url: "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh"
