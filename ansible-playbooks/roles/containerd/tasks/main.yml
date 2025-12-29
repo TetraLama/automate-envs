@@ -26,14 +26,25 @@
     replace: 'SystemdCgroup = true'
   become: true
 
-# - name: Configure CNI bin directory for Calico compatibility
-#   ansible.builtin.lineinfile:
-#     path: /etc/containerd/config.toml
-#     regexp: '^\s*bin_dir\s*='
-#     line: '      bin_dir = "/opt/cni/bin"'
-#     insertafter: '^\[plugins\."io\.containerd\.grpc\.v1\.cri"\.cni\]'
-#   become: true
-#   notify: restart containerd
+- name: Ensure CNI bin directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop:
+    - /opt/cni/bin
+    - /usr/libexec/cni
+  become: true
+
+- name: Configure CNI bin directory for Calico compatibility
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: '(\s*)bin_dir\s*=\s*"[^"]*"'
+    replace: '\1bin_dir = "/opt/cni/bin"'
+  become: true
+  notify: restart containerd
 
 - name: Ensure containerd service is enabled and started
   ansible.builtin.systemd:

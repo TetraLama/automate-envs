@@ -17,8 +17,8 @@ controlplane:
 
 worker:
   vars:
-    node-role.kubernetes.io/worker: "worker"
-    workload-type: "compute"
+    role: "worker"
+    workload_type: "compute"
     zone: "a"
   hosts:
     c2:
