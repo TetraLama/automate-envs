@@ -2,9 +2,18 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 local colors = {
-  fg="#d0d7de", bg="#0d1117", comment="#8b949e", red="#ff7b72",
-  green="#3fb950", yellow="#d29922", blue="#539bf5", magenta="#bc8cff",
-  cyan="#39c5cf", selection="#415555", caret="#58a6ff", invisibles="#2f363d"
+	fg = "#d0d7de",
+	bg = "#0d1117",
+	comment = "#8b949e",
+	red = "#ff7b72",
+	green = "#3fb950",
+	yellow = "#d29922",
+	blue = "#539bf5",
+	magenta = "#bc8cff",
+	cyan = "#39c5cf",
+	selection = "#415555",
+	caret = "#58a6ff",
+	invisibles = "#2f363d",
 }
 
 config.keys = {
